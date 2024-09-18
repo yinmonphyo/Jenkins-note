@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+    stages {
+        stage('RemoteSSH') {
+            steps {
+                catchError(message: 'skip-step', stageResult: 'FAILURE') {
+                    script {
+                        def remote = [:]
+                        remote.name = 'ymmp'
+                        remote.host = '10.201.119.61'
+                        remote.user = 'ymmp'
+                        remote.password = 'User@123'
+                        remote.allowAnyHosts = true
+                        sshCommand remote: remote, command: "mv /var/www/html/* /tmp/nginx-bk/"
+                    }
+                }
+            }
+        }
+        stage('Second') {
+            steps {
+                    script {
+                        def remote = [:]
+                        remote.name = 'ymmp'
+                        remote.host = '10.201.119.61'
+                        remote.user = 'ymmp'
+                        remote.password = 'User@123'
+                        remote.allowAnyHosts = true
+                        sshCommand remote: remote, command: "ls -al"
+                    }
+                }
+            }
+        }
+    }
+
