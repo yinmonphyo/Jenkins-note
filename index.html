@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+    stages {
+        stage('Remote 1') {
+            steps {
+                script {
+                    def remote = [:]
+                    remote.name = 'ymmp'
+                    remote.host = '192.168.1.13' 
+                    remote.user = 'ymmp'
+                    remote.password = 'User@123'
+                    remote.allowAnyHosts = true
+                    stage('Remote SSH') {
+                    catchError(message: 'skip-step', stageResult: 'FAILURE') {
+                        sshCommand remote: remote, command: "mv /var/www/html/* /tmp/bk/"
+                            }
+                        }
+                    stage('Git pull ') {
+                        sshCommand remote: remote, command: "cd /tmp/nginx-bk/Jenkins-note/ && git pull"
+                    }
+                }                            
+            }
+        }
+    }
+}  
